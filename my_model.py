@@ -23,47 +23,47 @@ def prob_down(prev):
 # signals = [1,1,1,1,0,0,1,1,0,1,1,1,1,1]
 # signals = [1,2,3,2,2,2,2,2,4,2,2,4,5,2,2,2,2,3,4,3,2,2,2,2,2,2,2,2,2,]
 # signals = [1,2,3]
+if __name__ == "__main__":
+# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    signals = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    signals += [1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1]
+    signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    # signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    # signals += [0,0,0,0,0,0,0,0,0,0,0,0]
 
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-signals = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-signals += [1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1]
-signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
-# signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-# signals += [0,0,0,0,0,0,0,0,0,0,0,0]
+    probs = []
+    # probs2 = []
+    diffs = []
 
-probs = []
-# probs2 = []
-diffs = []
+    first_signal = True
+    # prev_p = 0.0000000001
+    prev_p = 0.1
 
-first_signal = True
-# prev_p = 0.0000000001
-prev_p = 0.1
+    for signal in signals:
+        if signal == 1:
+            tmp_p = prob_up(prev_p)
+        elif signal == 0:
+            tmp_p = prob_down(prev_p)
 
-for signal in signals:
-    if signal == 1:
-        tmp_p = prob_up(prev_p)
-    elif signal == 0:
-        tmp_p = prob_down(prev_p)
+        diffs.append(abs(tmp_p - prev_p))
+        prev_p = tmp_p
+        probs.append(prev_p)
+        # print(prev_p)
 
-    diffs.append(abs(tmp_p - prev_p))
-    prev_p = tmp_p
-    probs.append(prev_p)
-    # print(prev_p)
+    plt.plot(probs, 'go-')
+    plt.plot(diffs, 'ro-')
 
-plt.plot(probs, 'go-')
-plt.plot(diffs, 'ro-')
-
-plt.show()
+    plt.show()
