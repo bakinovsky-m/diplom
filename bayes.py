@@ -26,6 +26,7 @@ def prob(p_t):
 
 signals = [1,0,0,0,0,1,1,0,0,0]
 signals += [1,1,1,1,1,0,0,1,1,1]
+signals += [0,0,0,0,0,0,0,0,0,0]
 signals += [1,1,1,1,1,1,1,1,1,1]
 signals += [1,1,1,1,1,1,1,1,1,1]
 signals += [1,1,1,1,1,1,1,1,1,1]
@@ -43,6 +44,7 @@ probs = []
 probs_bayes = []
 diffs = []
 
+cur_signals = []
 cur_signal = 1
 counter = 0
 
@@ -59,16 +61,19 @@ for s in signals:
     probs.append(prev_p)
     probs_bayes.append(bayes_p)
     print(counter, "cursign:", bayes_p, cur_signal)
-    if bayes_p <= 0.5:
+    if bayes_p <= 0.2:
         cur_signal = abs(1 - cur_signal)
         prev_p = 1 - prev_p
         print(counter, "new:", bayes_p, cur_signal)
+    cur_signals.append(cur_signal + .1)
     counter += 1
 
 
 plt.plot(probs, 'go-')
 plt.plot(probs_bayes, 'bo-')
-plt.plot(diffs, 'ro-')
+plt.plot(cur_signals, 'ro')
+plt.plot(signals, 'yo')
+# plt.plot(diffs, 'ro-')
 
 plt.show()
 # a = {}
