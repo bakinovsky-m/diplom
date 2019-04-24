@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 DELTA = 0.2
 
 def prob_up(prev):
-    res = abs(prev + abs(prev) * DELTA)
+    res = abs(prev + abs(prev**2) * DELTA)
+    # res = prev + (prev**(1/2))*DELTA
     # res = abs(prev + abs(prev) * DELTA)
     if res >= 1:
         return 0.99
@@ -11,7 +12,9 @@ def prob_up(prev):
     return res
 
 def prob_down(prev):
-    res = abs(prev - (1 - abs(prev)) * DELTA)
+    res = abs(prev - (1 - abs(prev**2)) * DELTA)
+    # print(prev)
+    # res = prev - (1 - (prev**(1/2)))*(1-DELTA)
     if res >= 1:
         return 0.99
     # return abs(prev - (1 - abs(prev)) * DELTA)
@@ -24,8 +27,8 @@ def prob(p_t):
     p_b = PROB_B_T * p_t + (1 - PROB_B_T) * (1 - p_t)
     return PROB_B_T * p_t / p_b
 
-signals = [1,0,0,0,0,1,1,0,0,0]
-signals += [1,1,1,1,1,0,0,1,1,1]
+signals = [1,0,0,0,0,1,1,0,0,1]
+signals += [1,1,1,1,1,1,1,1,1,1]
 signals += [0,0,0,0,0,0,0,0,0,0]
 signals += [1,1,1,1,1,1,1,1,1,1]
 signals += [1,1,1,1,1,1,1,1,1,1]
@@ -38,7 +41,7 @@ signals += [0,0,0,0,0,0,0,0,0,0]
 # signals += [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 # signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 
-prev_p = 0.5
+prev_p = 0.1
 
 probs = []
 probs_bayes = []
@@ -59,13 +62,13 @@ for s in signals:
     diffs.append(abs(tmp_p - prev_p))
     prev_p = tmp_p
     probs.append(prev_p)
-    probs_bayes.append(bayes_p)
+    probs_bayes.append(bayes_p -0.01)
     print(counter, "cursign:", bayes_p, cur_signal)
     if bayes_p <= 0.2:
         cur_signal = abs(1 - cur_signal)
         prev_p = 1 - prev_p
         print(counter, "new:", bayes_p, cur_signal)
-    cur_signals.append(cur_signal + .1)
+    cur_signals.append(cur_signal + .01)
     counter += 1
 
 
