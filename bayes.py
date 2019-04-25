@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 DELTA = 0.2
 
 def prob_up(prev):
-    res = abs(prev + abs(prev**2) * DELTA)
+    res = prev + prev * DELTA
     # res = prev + (prev**(1/2))*DELTA
     # res = abs(prev + abs(prev) * DELTA)
     if res >= 1:
@@ -12,11 +12,13 @@ def prob_up(prev):
     return res
 
 def prob_down(prev):
-    res = abs(prev - (1 - abs(prev**2)) * DELTA)
+    res = prev - (1 - prev) * DELTA
     # print(prev)
     # res = prev - (1 - (prev**(1/2)))*(1-DELTA)
-    if res >= 1:
-        return 0.99
+    # if res >= 1:
+        # return 0.99
+    if res <= 0:
+        return 0.01
     # return abs(prev - (1 - abs(prev)) * DELTA)
     return res
 
@@ -27,15 +29,20 @@ def prob(p_t):
     p_b = PROB_B_T * p_t + (1 - PROB_B_T) * (1 - p_t)
     return PROB_B_T * p_t / p_b
 
-signals = [1,0,0,0,0,1,1,0,0,1]
-signals += [1,1,1,1,1,1,1,1,1,1]
-signals += [0,0,0,0,0,0,0,0,0,0]
-signals += [1,1,1,1,1,1,1,1,1,1]
-signals += [1,1,1,1,1,1,1,1,1,1]
+# signals = [1,0,0,0,0,1,1,0,0,1]
+signals = [1,1,1,1,1,1,1,1,1,1]
 signals += [1,1,1,1,1,1,1,1,1,1]
 signals += [0,0,0,0,0,0,0,0,0,0]
 signals += [0,0,0,0,0,0,0,0,0,0]
+signals += [1,1,1,1,1,1,1,1,1,1]
+signals += [1,1,1,1,1,1,1,1,1,1]
+signals += [1,1,1,1,1,1,1,1,1,1]
 signals += [0,0,0,0,0,0,0,0,0,0]
+signals += [0,0,0,0,0,0,0,0,0,0]
+signals += [1,1]
+signals += [0,0,0,0,0,0,0,0,0,0]
+signals += [0,0,0,0,0,0,0,0,0,0]
+signals += [1,1,1,1,1,1]
 # signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 # signals += [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 # signals += [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -71,6 +78,8 @@ for s in signals:
     cur_signals.append(cur_signal + .01)
     counter += 1
 
+plt.xlabel("t")
+plt.ylabel("Уверенность")
 
 plt.plot(probs, 'go-')
 plt.plot(probs_bayes, 'bo-')
