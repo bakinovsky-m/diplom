@@ -38,7 +38,7 @@ def prob(p_t, rho):
 # signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 from generator import Generator
 
-def gen_plot(rho, n, fig, delta=DELTA):
+def gen_plot(rho, n, fig, delta, count):
     print('rho', rho)
     print('n', n)
     print('delta', delta)
@@ -46,7 +46,7 @@ def gen_plot(rho, n, fig, delta=DELTA):
 
     signals = []
     realsignals = []
-    for _ in range(300):
+    for _ in range(count):
         signals.append(g.next())
         realsignals.append(g.cur_signal)
 

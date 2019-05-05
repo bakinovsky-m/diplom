@@ -14,8 +14,8 @@ def print_gen_params(rho, n):
     print('rho',rho.get())
     print('n', n.get())
 
-def enter_callback(e, rho, n, fig, delta):
-    gen_plot(rho,n,fig,delta)
+def enter_callback(e, rho, n, fig, delta, count):
+    gen_plot(rho,n,fig,delta,count)
 
 def main():
     root = Tk()
@@ -35,7 +35,7 @@ def main():
     n_label = Label(root, text='Choose the n')
     n_label.pack()
     n_scale = Scale(root, orient=HORIZONTAL, length=W_WIDTH-100, from_=0, to=100, tickinterval=10, resolution=1)
-    n_scale.set(30)
+    n_scale.set(80)
     n_scale.pack()
 
     delta_label = Label(root, text='Choose the delta')
@@ -44,16 +44,22 @@ def main():
     delta_scale.set(0.9)
     delta_scale.pack()
 
-    fig = plt.figure(1, figsize=(9,8))
+    count_label = Label(root, text='Choose the count')
+    count_label.pack()
+    count_scale = Scale(root, orient=HORIZONTAL, length=W_WIDTH-100, from_=10, to=300, tickinterval=10, resolution=1)
+    count_scale.set(300)
+    count_scale.pack()
+
+    fig = plt.figure(1, figsize=(10,7))
     # plt.ion()
 
     canvas = FigureCanvasTkAgg(fig, master=root)
     plot_widget = canvas.get_tk_widget()
     plot_widget.pack()
-    button2 = Button(root, text='Generate', command=lambda:gen_plot(rho_scale.get(),n_scale.get(),fig,delta_scale.get()))
+    button2 = Button(root, text='Generate', command=lambda:gen_plot(rho_scale.get(),n_scale.get(),fig,delta_scale.get(),count_scale.get()))
     button2.pack()
 
-    root.bind("<Return>", lambda ev, rho=rho_scale.get(), n=n_scale.get(), fig=fig:gen_plot(rho_scale.get(),n_scale.get(),fig,delta_scale.get()))
+    root.bind("<Return>", lambda ev,:gen_plot(rho_scale.get(),n_scale.get(),fig,delta_scale.get(),count_scale.get()))
     root.mainloop()
 
 
