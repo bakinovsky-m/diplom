@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 DELTA = 0.8
 
@@ -38,7 +39,7 @@ def prob(p_t, rho):
 # signals += [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 from generator import Generator
 
-def gen_plot(rho, n, fig, delta, count):
+def gen_plot(rho, n, fig, delta, count, res_label):
     print('rho', rho)
     print('n', n)
     print('delta', delta)
@@ -69,13 +70,13 @@ def gen_plot(rho, n, fig, delta, count):
         # diffs.append(abs(tmp_p - prev_p))
         prev_p = tmp_p
         probs.append(prev_p)
-        probs_bayes.append(bayes_p -0.01)
+        probs_bayes.append(bayes_p - 0.01)
         # print(counter, "cursign:", bayes_p, cur_signal)
         if bayes_p <= 0.2:
             cur_signal = abs(1 - cur_signal)
             prev_p = 1 - prev_p
-            print(counter, "new:", bayes_p, cur_signal)
-        cur_signals.append(cur_signal + .01)
+            # print(counter, "new:", bayes_p, cur_signal)
+        cur_signals.append(cur_signal)
         counter += 1
 
     fig.clear()
@@ -87,5 +88,10 @@ def gen_plot(rho, n, fig, delta, count):
     plt.plot(signals, 'yo')
     plt.plot(realsignals, 'mo')
 
-    # plt.show()
     fig.canvas.draw()
+
+    accuracy = accuracy_score(cur_signals, realsignals)
+    precision = precision_score(cur_signals, realsignals)
+    recall = recall_score(cur_signals, realsignals)
+
+    res_label['text'] = 'accuracy: {:.3}'.format(accuracy) + "\nprecision: {:.3}".format(precision) + '\nrecall: {:.3}'.format(recall)
