@@ -45,7 +45,7 @@ def main():
     count_label.grid(row=6, column=0)
     count_scale.grid(row=7, column=0)
 
-    res_label = Label(root, text='accuracy\nprecision\nrecall')
+    res_label = Label(root, text='')
     res_label.grid(row=7, column=1)
 
     fig = plt.figure(1, figsize=(10,6))
