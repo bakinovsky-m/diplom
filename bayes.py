@@ -82,18 +82,18 @@ def gen_plot(rho, n, fig, delta, count, res_label):
     fig.clear()
     plt.xlabel("Время симуляции")
     plt.ylabel("Уверенность")
-    plt.plot(probs, 'go-')
-    plt.plot(probs_bayes, 'bo-')
-    plt.plot([x+0.01 for x in cur_signals], 'ro')
-    plt.plot([x-0.01 for x in signals], 'yo')
-    plt.plot(realsignals, 'mo')
+    plt.plot(probs, 'go-', label='confidence')
+    plt.plot(probs_bayes, 'bo-', label='confidence corrected')
+    plt.plot([x+0.01 for x in cur_signals], 'ro', label='current signal')
+    plt.plot([x-0.01 for x in signals], 'yo', label='generated signal')
+    plt.plot(realsignals, 'mo', label='real signal')
+    plt.legend()
 
     fig.canvas.draw()
 
     accuracy = accuracy_score(realsignals, cur_signals)
     precision = precision_score(realsignals, cur_signals)
     recall = recall_score(realsignals, cur_signals)
-    # recall = recall_score
     f1 = f1_score(realsignals, cur_signals)
 
     res_label['text'] = 'accuracy: {:.3}'.format(accuracy) + "\nprecision: {:.3}".format(precision) + '\nrecall: {:.3}'.format(recall) + '\nf1: {:.3}'.format(f1)
