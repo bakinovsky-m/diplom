@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 import numpy as np
-import math
 
 DELTA = 0.8
 
@@ -27,9 +26,6 @@ def trail_ma(t):
     return np.mean(t)
 
 def gen_plot(rho, n, fig, delta_small, delta_big, count, res_label):
-    # print('rho', rho)
-    # print('n', n)
-    # print('delta', delta)
     g = Generator(rho, n, (0,1))
 
     signals = []

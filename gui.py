@@ -52,15 +52,16 @@ def main():
     res_label = Label(root, text='')
     res_label.grid(row=7, column=2)
 
+    lamd = lambda:gen_plot(rho_scale.get(),n_scale.get(),fig,delta1_scale.get(),delta2_scale.get(),count_scale.get(), res_label)
+
     fig = plt.figure(1, figsize=(10,6))
     canvas = FigureCanvasTkAgg(fig, master=root)
     plot_widget = canvas.get_tk_widget()
     plot_widget.grid(row=0, column=2, rowspan=6)
-    button2 = Button(root, text='Generate', command=lambda:gen_plot(rho_scale.get(),n_scale.get(),fig,delta_scale.get(),count_scale.get(), res_label))
+    button2 = Button(root, text='Generate', command=lamd)
     button2.grid(row=6, column=2)
 
-
-    root.bind("<Return>", lambda ev:gen_plot(rho_scale.get(),n_scale.get(),fig,delta1_scale.get(),delta2_scale.get(),count_scale.get(), res_label))
+    root.bind("<Return>", lambda ev: lamd())
     root.mainloop()
 
 
