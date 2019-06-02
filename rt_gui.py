@@ -13,7 +13,7 @@ W_HEIGHT = 900
 RUNNING = False
 DELAY = 5
 
-N = 100
+N = 300
 
 GREEN_L = None # PhotoImage(file='green_light.jpg')
 RED_L = None # PhotoImage(file='red_light.jpg')
@@ -184,6 +184,7 @@ def main():
 
     root.bind("<Return>", lambda ev: switch_running(start_button))
     root.bind("r", lambda ev: obs.update_deltas(small_delta_scale.get(), big_delta_scale.get()))
+    root.bind('g', lambda ev: gen.update_rho(rho_scale.get()))
 
     fig = plt.figure(1, figsize=(10,6))
     canvas = FigureCanvasTkAgg(fig, master=root)

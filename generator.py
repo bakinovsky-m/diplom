@@ -27,6 +27,9 @@ class Generator:
         self.cur_n += 1
         return res
 
+    def update_rho(self, new_rho):
+        self.rho = new_rho
+
 
 if __name__ == '__main__':
     g = Generator(RHO, N, SIGNALS)
