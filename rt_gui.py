@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from datetime import datetime
 
 W_WIDTH = 900
 W_HEIGHT = 900
@@ -17,6 +18,11 @@ N = 300
 
 GREEN_L = None # PhotoImage(file='green_light.jpg')
 RED_L = None # PhotoImage(file='red_light.jpg')
+
+IMPORTANT_A = (0,)
+
+IMP_WEIGHT = 2
+NOT_IMP_WEIGHT = 1
 
 def levenshteinDistance(s1, s2):
     if len(s1) > len(s2):
@@ -39,6 +45,17 @@ def hemmingDist(a_list,b_list):
         if a!=b:
             res += 1
     return res
+
+def wHemmingDist(a_list, b_list):
+    res = 0
+    for a,b in zip(a_list, b_list):
+        if a!=b:
+            # res += 1
+            if a in IMPORTANT_A:
+                res += IMP_WEIGHT
+            else:
+                res += NOT_IMP_WEIGHT
+    return res    
 
 class Observer:
     def __init__(self, small_delta, big_delta):
@@ -71,10 +88,23 @@ class Observer:
 ITER = 0
 
 scores = []
+ma_signals = []
+ma_scores = []
+
+def ma(lis):
+    res = sum(lis)/len(lis)
+    # return 
+    if res >= 0.8:
+        return 1
+    else:
+        return 0
+
+gen_signals = []
 
 def run(root, obs, gen, pred_label, real_label, stats_label, real_signals, pred_signals):
     if RUNNING:
         signal = gen.next()
+        gen_signals.append(signal)
         if gen.cur_signal == 1:
             real_label['text'] = "MOVE"
             real_label['image'] = GREEN_L
@@ -89,22 +119,31 @@ def run(root, obs, gen, pred_label, real_label, stats_label, real_signals, pred_
             pred_label['text'] = "STOP"
             pred_label['image'] = RED_L
         # print('{} {} {}'.format(signal, obs.cur_signal, obs.cur_conf))
-        print('----------')
+        # print('----------')
         global ITER
-        print("ITER", ITER)
-        print("real_label",gen.cur_signal)
-        print("sign",signal)
-        print("pred",obs.cur_signal, obs.cur_conf)
-        print('----------')
+        # print("ITER", ITER)
+        # print("real_label",gen.cur_signal)
+        # print("sign",signal)
+        # print("pred",obs.cur_signal, obs.cur_conf)
+        # print('----------')
 
         real_signals.append(gen.cur_signal)
         pred_signals.append(obs.cur_signal)
+        ma_signals.append(ma(gen_signals[-100:]))
 
         if ITER % 10 == 0:
             stats_label['text'] = "iter: " + str(ITER) + "\n"
-            score = hemmingDist(real_signals[-10*N:],pred_signals[-10*N:])/len(real_signals)
+            # score = hemmingDist(real_signals[-10*N:],pred_signals[-10*N:])/len(real_signals)
+            # score = hemmingDist(real_signals,pred_signals)/len(real_signals)
+            score = wHemmingDist(real_signals, pred_signals)/len(real_signals)
             scores.append(score)
-            stats_label['text'] += "score: {:0.3}".format(score)
+            # ma_scores.append(hemmingDist(real_signals, ma_signals)/len(real_signals))
+            ma_score = wHemmingDist(real_signals, ma_signals)/len(real_signals)
+            ma_scores.append(ma_score)
+            # if ITER % 100 == 0:
+            stats_label['text'] += "conf: {:0.3}\n".format(obs.cur_conf)
+            stats_label['text'] += "score: {:0.3}\n".format(score)
+            stats_label['text'] += "ma score: {:0.3}".format(ma_score)
         # real_signals = real_signals[-N*10:]
         # pred_signals = pred_signals[-N*10:]
         ITER += 1
@@ -121,16 +160,22 @@ def switch_running(label):
 
 def draw_plot(root, fig):
     fig.clear()
-    plt.plot(scores)
+    plt.plot(scores, 'b-', label="F error")
+    plt.plot(ma_scores, 'r-', label="MA error")
     plt.xlabel("Время симуляции")
-    plt.ylabel("mu(T, Q)")
+    plt.ylabel("Функция ошибки")
     # plt.plot(scores)
     # plt.draw()
     # plt.pause(0.01)
-    # plt.legend()
+    plt.legend()
 
     fig.canvas.draw()
     root.after(DELAY*100, draw_plot, root, fig)
+
+def save_plot():
+    path = "images/{}_{}.png".format(datetime.now().strftime('%Y%m%d_%H%M%S'), ITER)
+    print('saving to', path)
+    plt.savefig(path)
 
 def main():
     root = Tk()
@@ -146,13 +191,13 @@ def main():
 
     small_delta_label = Label(root, text="small delta")
     small_delta_label.grid(row=1, column=0)
-    small_delta_scale = Scale(root, orient=HORIZONTAL, length=W_WIDTH-100, from_=0, to=1, tickinterval=0.1, resolution=0.1)
+    small_delta_scale = Scale(root, orient=HORIZONTAL, length=W_WIDTH-100, from_=0, to=1, tickinterval=0.1, resolution=0.05)
     small_delta_scale.set(0.5)
     small_delta_scale.grid(row=1, column=1)
 
     big_delta_label = Label(root, text="big delta")
     big_delta_label.grid(row=2, column=0)
-    big_delta_scale = Scale(root, orient=HORIZONTAL, length=W_WIDTH-100, from_=0, to=1, tickinterval=0.1, resolution=0.1)
+    big_delta_scale = Scale(root, orient=HORIZONTAL, length=W_WIDTH-100, from_=0, to=1, tickinterval=0.1, resolution=0.05)
     big_delta_scale.set(0.9)
     big_delta_scale.grid(row=2, column=1)
 
@@ -183,8 +228,9 @@ def main():
     stats_label.grid(row=3, column=2, columnspan=2)
 
     root.bind("<Return>", lambda ev: switch_running(start_button))
-    root.bind("r", lambda ev: obs.update_deltas(small_delta_scale.get(), big_delta_scale.get()))
+    root.bind("o", lambda ev: obs.update_deltas(small_delta_scale.get(), big_delta_scale.get()))
     root.bind('g', lambda ev: gen.update_rho(rho_scale.get()))
+    root.bind('s', lambda ev: save_plot())
 
     fig = plt.figure(1, figsize=(10,6))
     canvas = FigureCanvasTkAgg(fig, master=root)

@@ -28,6 +28,7 @@ class Generator:
         return res
 
     def update_rho(self, new_rho):
+        print('updated rho, new rho:', new_rho)
         self.rho = new_rho
 
 
