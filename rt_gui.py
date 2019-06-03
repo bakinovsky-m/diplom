@@ -58,32 +58,33 @@ def wHemmingDist(a_list, b_list):
     return res    
 
 class Observer:
-    def __init__(self, small_delta, big_delta):
-        self.small_delta = small_delta
-        self.big_delta = big_delta
+    def __init__(self, low_delta, high_delta):
+        self.low_delta = low_delta
+        self.high_delta = high_delta
         self.cur_conf = 0.9
         self.cur_signal = 0
+        self.border = 0.1
 
     def process(self, signal):
         delta = {}
         if self.cur_signal == 0:
-            delta = {"up":self.big_delta, "down": self.small_delta}
+            delta = {"up":self.high_delta, "down": self.low_delta}
         else:
-            delta = {"up":self.small_delta, "down": self.big_delta}
+            delta = {"up":self.low_delta, "down": self.high_delta}
         if signal == self.cur_signal:
-            tmp_p = prob_up(self.cur_conf, delta["up"])
+            tmp_p = conf_up(self.cur_conf, delta["up"])
         elif signal != self.cur_signal:
-            tmp_p = prob_down(self.cur_conf, delta["down"])
+            tmp_p = conf_down(self.cur_conf, delta["down"])
 
         self.cur_conf = tmp_p
 
-        if abs(self.cur_conf)<=0.1:
+        if abs(self.cur_conf)<=self.border:
             self.cur_signal = abs(1 - self.cur_signal)
             self.cur_conf = 1.0
 
-    def update_deltas(self, small_delta, big_delta):
-        self.small_delta = small_delta
-        self.big_delta = big_delta
+    def update_deltas(self, low_delta, high_delta):
+        self.low_delta = low_delta
+        self.high_delta = high_delta
 
 ITER = 0
 

@@ -4,13 +4,13 @@ import numpy as np
 
 DELTA = 0.8
 
-def prob_up(prev, delta):
+def conf_up(prev, delta):
     res = prev + prev * delta
     if res >= 1:
         return 0.99
     return res
 
-def prob_down(prev, delta):
+def conf_down(prev, delta):
     res = prev - (1 - prev) * delta
     if res <= 0:
         return 0.01
@@ -51,9 +51,9 @@ def gen_plot(rho, n, fig, delta_small, delta_big, count, res_label):
         else:
             delta = {"up":delta_small, "down": delta_big}
         if s == cur_signal:
-            tmp_p = prob_up(prev_p, delta["up"])
+            tmp_p = conf_up(prev_p, delta["up"])
         elif s != cur_signal:
-            tmp_p = prob_down(prev_p, delta["down"])
+            tmp_p = conf_down(prev_p, delta["down"])
         bayes_p = prob(tmp_p, rho)
         prev_p = tmp_p
         probs.append(prev_p)
