@@ -12,7 +12,7 @@ W_WIDTH = 900
 W_HEIGHT = 900
 
 RUNNING = False
-DELAY = 5
+DELAY = 1
 
 N = 300
 
@@ -85,12 +85,14 @@ class Observer:
     def update_deltas(self, low_delta, high_delta):
         self.low_delta = low_delta
         self.high_delta = high_delta
+        print('updated deltas: low {}, high {}'.format(low_delta, high_delta))
 
 ITER = 0
 
 scores = []
 ma_signals = []
 ma_scores = []
+MA_WINDOW = 100
 
 def ma(lis):
     res = sum(lis)/len(lis)
@@ -103,6 +105,7 @@ def ma(lis):
 gen_signals = []
 
 def run(root, obs, gen, pred_label, real_label, stats_label, real_signals, pred_signals):
+    global RUNNING
     if RUNNING:
         signal = gen.next()
         gen_signals.append(signal)
@@ -130,9 +133,10 @@ def run(root, obs, gen, pred_label, real_label, stats_label, real_signals, pred_
 
         real_signals.append(gen.cur_signal)
         pred_signals.append(obs.cur_signal)
-        ma_signals.append(ma(gen_signals[-100:]))
+        ma_signals.append(ma(gen_signals[-MA_WINDOW:]))
 
         if ITER % 10 == 0:
+        # if ITER:
             stats_label['text'] = "iter: " + str(ITER) + "\n"
             # score = hemmingDist(real_signals[-10*N:],pred_signals[-10*N:])/len(real_signals)
             # score = hemmingDist(real_signals,pred_signals)/len(real_signals)
@@ -148,7 +152,8 @@ def run(root, obs, gen, pred_label, real_label, stats_label, real_signals, pred_
         # real_signals = real_signals[-N*10:]
         # pred_signals = pred_signals[-N*10:]
         ITER += 1
-
+        if ITER == 10000 or ITER == 50000:
+            RUNNING = not RUNNING
     root.after(DELAY, run, root, obs, gen, pred_label, real_label, stats_label, real_signals, pred_signals)
 
 def switch_running(label):
@@ -173,8 +178,8 @@ def draw_plot(root, fig):
     fig.canvas.draw()
     root.after(DELAY*100, draw_plot, root, fig)
 
-def save_plot():
-    path = "images/{}_{}.png".format(datetime.now().strftime('%Y%m%d_%H%M%S'), ITER)
+def save_plot(obs, gen):
+    path = "images/{}_l{}_h{}_rho{}_maw{}_sc{:0.3}_masc{:0.3}.png".format(datetime.now().strftime('%Y%m%d_%H%M%S'), obs.low_delta, obs.high_delta, gen.rho, MA_WINDOW, scores[-1], ma_scores[-1])
     print('saving to', path)
     plt.savefig(path)
 
@@ -231,7 +236,7 @@ def main():
     root.bind("<Return>", lambda ev: switch_running(start_button))
     root.bind("o", lambda ev: obs.update_deltas(small_delta_scale.get(), big_delta_scale.get()))
     root.bind('g', lambda ev: gen.update_rho(rho_scale.get()))
-    root.bind('s', lambda ev: save_plot())
+    root.bind('s', lambda ev: save_plot(obs, gen))
 
     fig = plt.figure(1, figsize=(10,6))
     canvas = FigureCanvasTkAgg(fig, master=root)
